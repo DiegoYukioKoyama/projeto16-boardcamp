@@ -11,7 +11,20 @@ export async function getAllCustomers(req, res) {
     }
 }
 
+export async function getCustomerById(req, res) {
 
+    const { id } = req.params
+
+    try {
+        const customer = await db.query(`SELECT * FROM customers WHERE id = $1`, [id])
+        
+        if (customer.rows.length > 0) return res.send(customer.rows[0])
+
+        return res.status(404).send("Cliente não cadastrado")
+    } catch (error) {
+        return res.sendStatus(404)
+    }
+}
 
 export async function registerCustomer(req, res) {
 
