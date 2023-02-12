@@ -17,7 +17,7 @@ export async function getCustomerById(req, res) {
 
     try {
         const customer = await db.query(`SELECT * FROM customers WHERE id = $1`, [id])
-        
+
         if (customer.rows.length > 0) return res.send(customer.rows[0])
 
         return res.status(404).send("Cliente não cadastrado")
@@ -41,6 +41,27 @@ export async function registerCustomer(req, res) {
 
         return res.status(409).send("Cliente já cadastrado!")
 
+    } catch (error) {
+        return res.status(500).send(error.message)
+    }
+}
+
+export async function updateCustomer(req, res) {
+
+    const { id } = req.params
+
+    const { name, phone, cpf, birthday } = req.body
+
+    try {
+        const customer = await db.query(
+            `UPDATE customers SET name = $1, phone = $2, birthday = $3 WHERE id = $4 AND cpf = $5 RETURNING cpf`, 
+            [name, phone, birthday, id, cpf]
+        )
+
+        if (customer.rows.length === 0) return res.sendStatus(409)
+
+        return res.sendStatus(200)
+          
     } catch (error) {
         return res.status(500).send(error.message)
     }
