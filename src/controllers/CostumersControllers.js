@@ -53,15 +53,24 @@ export async function updateCustomer(req, res) {
     const { name, phone, cpf, birthday } = req.body
 
     try {
-        const customer = await db.query(
-            `UPDATE customers SET name = $1, phone = $2, birthday = $3 WHERE id = $4 AND cpf = $5 RETURNING cpf`, 
-            [name, phone, birthday, id, cpf]
-        )
+        // const customer = await db.query(
+        //     `UPDATE customers SET name = $1, phone = $2, birthday = $3 WHERE id = $4 AND cpf = $5 RETURNING cpf`, 
+        //     [name, phone, birthday, id, cpf]
+        // )
 
-        if (customer.rows.length === 0) return res.sendStatus(409)
+        // if (customer.rows.length === 0) return res.sendStatus(409)
 
-        return res.sendStatus(200)
+        // return res.sendStatus(200)
           
+        const checkCpf = await db.query(`SELECT * FROM customers WHERE id = $1`, [id])
+        
+        if(checkCpf.rows[0].cpf !== cpf) return res.sendStatus(409)
+
+        const customer = await db.query(
+            `UPDATE customers SET name = $1, phone = $2, birthday = $3 WHERE id = $4`, [name, phone, birthday, id] 
+        )
+        return res.sendStatus(200)
+        
     } catch (error) {
         return res.status(500).send(error.message)
     }

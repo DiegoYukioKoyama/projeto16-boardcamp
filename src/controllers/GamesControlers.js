@@ -16,7 +16,7 @@ export async function registerGames(req,res) {
     const {name, image, stockTotal, pricePerDay} = req.body
 
     if(stockTotal <= 0 || pricePerDay <= 0) return res.sendStatus(400)
-
+    
     try {
         const game = await db.query(
             `INSERT INTO games (name, image, "stockTotal", "pricePerDay")
